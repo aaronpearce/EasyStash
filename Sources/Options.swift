@@ -14,6 +14,7 @@ public struct Options {
     public var encoder: JSONEncoder = JSONEncoder()
     public var decoder: JSONDecoder = JSONDecoder()
     public var directoryUrl: URL? = nil
+    public var useInMemoryCache: Bool = true
 
     public init() {}
 }

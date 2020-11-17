@@ -40,7 +40,10 @@ public extension Storage {
     func removeAll(predicate: (File) -> Bool) throws {
         let files = try self.files().filter(predicate)
         try files.forEach {
-            cache.removeObject(forKey: $0.name as NSString)
+            if options.useInMemoryCache {
+                cache.removeObject(forKey: $0.name as NSString)
+            }
+
             try remove(forKey: $0.name)
         }
     }

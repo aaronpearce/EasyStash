@@ -50,13 +50,19 @@ public class Storage {
     }
 
     public func removeAll() throws {
-        cache.removeAllObjects()
+        if options.useInMemoryCache {
+            cache.removeAllObjects()
+        }
+
         try fileManager.removeItem(at: folderUrl)
         try createDirectoryIfNeeded(folderUrl: folderUrl)
     }
 
     public func remove(forKey key: String) throws {
-        cache.removeObject(forKey: key as NSString)
+        if options.useInMemoryCache {
+            cache.removeObject(forKey: key as NSString)
+        }
+
         try fileManager.removeItem(at: fileUrl(forKey: key))
     }
 }
@@ -99,7 +105,11 @@ extension Storage {
 extension Storage {
     func commonSave(object: AnyObject, forKey key: String, toData: () throws -> Data) throws {
         let data = try toData()
-        cache.setObject(object, forKey: key as NSString)
+
+        if options.useInMemoryCache {
+            cache.setObject(object, forKey: key as NSString)
+        }
+
         try fileManager
             .createFile(atPath: fileUrl(forKey: key).path, contents: data, attributes: nil)
             .trueOrThrow(StorageError.createFile)
@@ -123,7 +133,11 @@ extension Storage {
         } else {
             let data = try Data(contentsOf: fileUrl(forKey: key))
             let object = try fromData(data)
-            cache.setObject(object as AnyObject, forKey: key as NSString)
+
+            if options.useInMemoryCache {
+                cache.setObject(object as AnyObject, forKey: key as NSString)
+            }
+
             return object
         }
     }
